@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  server:
+    container_name: server
+    entrypoint: dockerize -wait tcp://pgdb:5432 -timeout 40s ./.docker/entrypoint.sh
+    build: .
+    restart: always
+    depends_on:
+      - pgdb
+    networks:
+      - microservices
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/home/node/app
+
+  pgdb:
+    build: .docker/postgres
+    container_name: psqldatabase
+    tty: true
+    restart: always
+    volumes:
+      - ./.docker/dbdata:/var/lib/postgresql/data
+      - ./.docker/postgres/docker-postgresql:/docker-entrypoint-initdb.d
+    networks:
+      - microservices
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=postgres:dbpaint,postgres:dbtest
+      - POSTGRES_PASSWORD=root
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: home-paint-api-pgadmin
+    tty: true
+    networks:
+      - microservices
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@user.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+    ports:
+      - 9002:80
