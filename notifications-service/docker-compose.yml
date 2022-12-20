@@ -3,17 +3,23 @@ version: "3.9"
 services:
   server:
     container_name: server
-    entrypoint: dockerize -wait tcp://pgdb:5432 -timeout 40s ./.docker/entrypoint.sh
-    build: .
+    build:
+      dockerfile: Dockerfile
+      context: .
+      # Only will build development stage from our dockerfile
+      target: development
     restart: always
     depends_on:
       - pgdb
     networks:
       - microservices
-    ports:
-      - '3000:3000'
     volumes:
-      - .:/home/node/app
+      - .:/usr/src/app
+      - ./usr/src/app/node_modules
+    # Run in dev Mode: npm run start:dev
+    command: npm run start:dev
+    ports:
+      - 3000:3000
 
   pgdb:
     build: .docker/postgres
@@ -21,19 +27,19 @@ services:
     tty: true
     restart: always
     volumes:
-      - ./.docker/dbdata:/var/lib/postgresql/data
-      - ./.docker/postgres/docker-postgresql:/docker-entrypoint-initdb.d
+      - ./docker/dbdata:/var/lib/postgresql/data
+      - ./docker/postgres/docker-postgresql:/docker-entrypoint-initdb.d
     networks:
       - microservices
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_MULTIPLE_DATABASES=postgres:dbpaint,postgres:dbtest
       - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=dbpaint
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: home-paint-api-pgadmin
+    container_name: pgadmin
     tty: true
     networks:
       - microservices
@@ -42,3 +48,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=123456
     ports:
       - 9002:80
+
+networks:
+  microservices:
+    name: microservices

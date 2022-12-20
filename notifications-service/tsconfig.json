@@ -12,10 +12,23 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "strictPropertyInitialization": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@domain/*":["./src/domain/*"],
+      "@infra/*":["./src/infra/*"],
+      "@main/*":["./src/main/*"],
+      "@entities/*":["./src/entities/*"],
+      "@presentation/*":["./src/presentation/*"],
+      "@use-cases/*":["./src/use-cases/*"],
+      "@utils/*":["./src/utils/*"],
+      "@test/*":["./src/test/*"]
+    }
   }
 }
