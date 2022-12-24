@@ -5,32 +5,21 @@ services:
     container_name: server
     build:
       dockerfile: Dockerfile
-      context: .
-      # Only will build development stage from our dockerfile
-      target: development
     restart: always
     depends_on:
       - pgdb
-    networks:
-      - microservices
     volumes:
-      - .:/usr/src/app
-      - ./usr/src/app/node_modules
-    # Run in dev Mode: npm run start:dev
-    command: npm run start:dev
+      - .:/home/app
     ports:
       - 3000:3000
 
   pgdb:
-    build: .docker/postgres
+    build: ./docker/postgres
     container_name: psqldatabase
     tty: true
     restart: always
     volumes:
       - ./docker/dbdata:/var/lib/postgresql/data
-      - ./docker/postgres/docker-postgresql:/docker-entrypoint-initdb.d
-    networks:
-      - microservices
     ports:
       - 5432:5432
     environment:
@@ -41,14 +30,8 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin
     tty: true
-    networks:
-      - microservices
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@user.com
       - PGADMIN_DEFAULT_PASSWORD=123456
     ports:
       - 9002:80
-
-networks:
-  microservices:
-    name: microservices

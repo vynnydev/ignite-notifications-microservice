@@ -1,6 +1,15 @@
-import { Notification as RawNotification } from '@prisma/client';
 import { Notification } from '@entities/notification';
 import { Content } from '@entities/content';
+
+interface RawNotification {
+  id: string;
+  recipientId: string;
+  content: string;
+  category: string;
+  readAt: Date | null;
+  canceledAt: Date | null;
+  createdAt: Date;
+}
 
 export class PrismaNotificationMapper {
   static toPrisma(notification: Notification) {
